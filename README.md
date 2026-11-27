@@ -1,2 +1,3 @@
-# ayora
-AYORA - Anonymous Social Universe
+# VEKLIX
+
+Siyaset ciddi, biz değiliz.
