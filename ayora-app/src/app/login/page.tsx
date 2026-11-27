@@ -35,81 +35,95 @@ export default function LoginPage() {
   }
 
   return (
-    <main style={{
-      minHeight: "100vh",
-      display: "grid",
-      placeItems: "center",
-      background: "#080910",
-      color: "white",
-      padding: "24px"
-    }}>
-      <form onSubmit={handleLogin} style={{
-        width: "100%",
-        maxWidth: "420px",
-        background: "#151522",
-        padding: "32px",
-        borderRadius: "18px",
-        border: "1px solid #34304b"
-      }}>
-        <h1 style={{ fontSize: "36px" }}>AYORA</h1>
-        <p style={{ color: "#aaa", marginBottom: "28px" }}>
-          Yeniden evrenine hoş geldin.
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#090b12] px-5 py-10 text-white">
+      <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-violet-600/20 blur-[120px]" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-indigo-600/20 blur-[120px]" />
+
+      <div className="relative w-full max-w-md">
+        <a href="/" className="mb-8 flex items-center justify-center gap-3">
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-600 text-2xl font-black">
+            V
+          </span>
+          <span className="text-3xl font-black tracking-[0.18em]">
+            VEKLIX
+          </span>
+        </a>
+
+        <form
+          onSubmit={handleLogin}
+          className="rounded-3xl border border-violet-500/20 bg-[#11141f]/95 p-7 shadow-2xl shadow-violet-950/20 sm:p-9"
+        >
+          <div className="mb-8">
+            <p className="text-xs font-bold tracking-[0.3em] text-violet-300">
+              TEKRAR HOŞ GELDİN
+            </p>
+
+            <h1 className="mt-4 text-3xl font-black">
+              Maskeni yeniden tak.
+            </h1>
+
+            <p className="mt-3 text-sm leading-6 text-gray-400">
+              VEKLIX evreninde hikâyene kaldığın yerden devam et.
+            </p>
+          </div>
+
+          <label className="mb-2 block text-sm font-semibold text-gray-300">
+            E-posta adresin
+          </label>
+
+          <input
+            required
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="ornek@mail.com"
+            className="mb-5 w-full rounded-xl border border-white/10 bg-[#090b12] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-violet-500"
+          />
+
+          <label className="mb-2 block text-sm font-semibold text-gray-300">
+            Şifren
+          </label>
+
+          <input
+            required
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Şifreni gir"
+            className="mb-5 w-full rounded-xl border border-white/10 bg-[#090b12] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-violet-500"
+          />
+
+          {message && (
+            <p className="mb-5 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-300">
+              {message}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-xl bg-violet-600 py-3.5 text-sm font-bold text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loading ? "Giriş yapılıyor..." : "VEKLIX'e Giriş Yap"}
+          </button>
+
+          <div className="my-7 border-t border-white/10" />
+
+          <p className="text-center text-sm text-gray-400">
+            Henüz hesabın yok mu?{" "}
+            <a
+              href="/signup"
+              className="font-bold text-violet-400 transition hover:text-violet-300"
+            >
+              Hemen kayıt ol
+            </a>
+          </p>
+        </form>
+
+        <p className="mt-6 text-center text-xs text-gray-600">
+          VEKLIX © 2026 · Anonim ol. Kendi hikâyeni yaz.
         </p>
-
-        <label>E-posta adresin</label>
-        <input
-          required
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={inputStyle}
-        />
-
-        <label>Şifren</label>
-        <input
-          required
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={inputStyle}
-        />
-
-        {message && <p style={{ color: "#ff7777" }}>{message}</p>}
-
-        <button type="submit" disabled={loading} style={buttonStyle}>
-          {loading ? "Giriş yapılıyor..." : "AYORA'ya Giriş Yap"}
-        </button>
-
-        <p style={{ color: "#aaa", marginTop: "20px" }}>
-          Henüz hesabın yok mu?{" "}
-          <a href="/signup" style={{ color: "#a879ff" }}>
-            Kayıt ol
-          </a>
-        </p>
-      </form>
+      </div>
     </main>
   );
 }
-
-const inputStyle: React.CSSProperties = {
-  display: "block",
-  width: "100%",
-  padding: "13px",
-  margin: "8px 0 20px",
-  borderRadius: "9px",
-  border: "1px solid #39364d",
-  background: "#0c0c16",
-  color: "white",
-  boxSizing: "border-box",
-};
-
-const buttonStyle: React.CSSProperties = {
-  width: "100%",
-  padding: "15px",
-  background: "#8725ff",
-  color: "white",
-  border: "none",
-  borderRadius: "9px",
-  fontWeight: "bold",
-  cursor: "pointer",
-};

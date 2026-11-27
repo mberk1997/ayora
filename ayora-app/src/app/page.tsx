@@ -17,7 +17,7 @@ const navigation = [
   ["⌂", "Ana Sayfa"],
   ["♡", "Match"],
   ["✉", "Mesajlar"],
-  ["◎", "AYORA Gündemi"],
+  ["◎", "VEKLIX Gündemi"],
   ["♟", "Siyaset"],
   ["♧", "Topluluklar"],
 ];
@@ -40,7 +40,6 @@ export default function Home() {
   const [signingOut, setSigningOut] = useState(false);
   const [deletingPostId, setDeletingPostId] = useState<number | null>(null);
 
-  // Kullanıcının oturumunu kontrol et
   useEffect(() => {
     let mounted = true;
 
@@ -81,7 +80,6 @@ export default function Home() {
     };
   }, [supabase]);
 
-  // Kullanıcının nick bilgisini al
   useEffect(() => {
     let mounted = true;
 
@@ -118,7 +116,6 @@ export default function Home() {
     };
   }, [supabase, userId, fallbackNickname]);
 
-  // Gönderileri yükle
   async function loadPosts() {
     setLoading(true);
     setMessage("");
@@ -166,7 +163,6 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Yeni gönderi paylaş
   async function handlePost() {
     const content = post.trim();
 
@@ -205,11 +201,10 @@ export default function Home() {
 
     setPost("");
     await loadPosts();
-    setMessage("Gönderin AYORA'da yayınlandı!");
+    setMessage("Gönderin VEKLIX'te yayınlandı!");
     setPosting(false);
   }
 
-  // Yalnızca kendi gönderisini sil
   async function handleDeletePost(postId: number) {
     const confirmed = window.confirm(
       "Bu gönderiyi silmek istediğine emin misin? Bu işlem geri alınamaz."
@@ -242,7 +237,6 @@ export default function Home() {
     setDeletingPostId(null);
   }
 
-  // Oturumu kapat
   async function handleLogout() {
     setSigningOut(true);
 
@@ -251,13 +245,12 @@ export default function Home() {
     if (error) {
       setMessage("Çıkış yapılamadı: " + error.message);
     } else {
-      setMessage("AYORA oturumun kapatıldı.");
+      setMessage("VEKLIX oturumun kapatıldı.");
     }
 
     setSigningOut(false);
   }
 
-  // Menü yönlendirmeleri
   function handleNavigation(label: string) {
     setActive(label);
 
@@ -272,16 +265,16 @@ export default function Home() {
         <div className="mx-auto flex h-16 max-w-[1450px] items-center justify-between gap-3 px-5">
           <div className="flex items-center gap-3 shrink-0">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 text-xl font-black">
-              A
+              V
             </div>
             <span className="text-2xl font-black tracking-[0.18em]">
-              AYORA
+              VEKLIX
             </span>
           </div>
 
           <div className="hidden w-full max-w-md md:block">
             <input
-              placeholder="AYORA'da ara..."
+              placeholder="VEKLIX'te ara..."
               className="w-full rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm outline-none focus:border-violet-500"
             />
           </div>
@@ -354,7 +347,7 @@ export default function Home() {
             <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
               <p className="text-sm font-bold">Kendi hikâyeni yaz.</p>
               <p className="mt-2 text-xs leading-5 text-gray-500">
-                AYORA'da kim olduğunu sen belirlersin.
+                VEKLIX'te kim olduğunu sen belirlersin.
               </p>
             </div>
           </div>
@@ -366,7 +359,7 @@ export default function Home() {
 
             <div className="relative">
               <p className="text-xs font-bold tracking-[0.3em] text-violet-300">
-                AYORA'YA HOŞ GELDİN
+                VEKLIX'E HOŞ GELDİN
               </p>
 
               <h1 className="mt-4 text-4xl font-black leading-tight sm:text-5xl">
@@ -391,7 +384,7 @@ export default function Home() {
 
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold">AYORA Gündemi</h2>
+              <h2 className="text-xl font-bold">VEKLIX Gündemi</h2>
               <p className="mt-1 text-xs text-gray-500">
                 Evrenin nabzı burada atıyor.
               </p>
@@ -440,7 +433,7 @@ export default function Home() {
             <div className="rounded-2xl border border-white/10 bg-[#11141f] p-8 text-center">
               <p className="font-bold">Henüz gönderi yok.</p>
               <p className="mt-2 text-sm text-gray-500">
-                AYORA'daki ilk hikâyeyi sen başlat.
+                VEKLIX'teki ilk hikâyeyi sen başlat.
               </p>
             </div>
           ) : (
@@ -484,7 +477,7 @@ export default function Home() {
                 <div className="flex gap-5 border-t border-white/10 pt-4 text-xs text-gray-400">
                   <span>♥ Beğeni sistemi yakında</span>
                   <span>◯ Yorumlar yakında</span>
-                  <span className="ml-auto">AYORA</span>
+                  <span className="ml-auto">VEKLIX</span>
                 </div>
               </article>
             ))
@@ -493,7 +486,7 @@ export default function Home() {
 
         <aside className="hidden space-y-5 lg:block">
           <div className="rounded-2xl border border-white/10 bg-[#11141f] p-5">
-            <h3 className="font-bold">AYORA'nın Nabzı</h3>
+            <h3 className="font-bold">VEKLIX'in Nabzı</h3>
 
             <div className="mt-5 space-y-4">
               <div className="flex justify-between text-sm">
@@ -518,7 +511,7 @@ export default function Home() {
           <div className="rounded-2xl border border-white/10 bg-[#11141f] p-5">
             <h3 className="font-bold">Günün konusu</h3>
             <p className="mt-3 text-sm leading-6 text-gray-300">
-              AYORA'da güven mi daha önemli, güç mü?
+              VEKLIX'te güven mi daha önemli, güç mü?
             </p>
             <span className="mt-3 inline-block text-xs text-violet-400">
               Yakında anketler
@@ -526,7 +519,7 @@ export default function Home() {
           </div>
 
           <div className="px-2 text-[11px] leading-6 text-gray-600">
-            AYORA © 2026
+            VEKLIX © 2026
             <br />
             Anonim ol. Kendi hikâyeni yaz.
           </div>
