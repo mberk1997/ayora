@@ -13,6 +13,8 @@ type Question = {
   question: string;
   options: string[];
   multiSelect?: boolean;
+  optional?: boolean;
+  political?: boolean;
 };
 
 const questions: Question[] = [
@@ -53,7 +55,7 @@ const questions: Question[] = [
   },
   {
     category: "İlişki ve iletişim",
-    question: "VEKLIX'da öncelikli olarak ne arıyorsun?",
+    question: "VEKİLX'te öncelikli olarak ne arıyorsun?",
     options: ["Ciddi ilişki", "Arkadaşlık", "Yeni insanlarla tanışmak", "Henüz karar vermedim"],
   },
   {
@@ -127,13 +129,70 @@ const questions: Question[] = [
     options: ["Kadın", "Erkek", "Non-binary", "Hepsi"],
     multiSelect: true,
   },
+  {
+    category: "Siyasi görüş ve politik tercihler",
+    question: "Devlet ekonomide nasıl bir rol üstlenmeli?",
+    options: ["Ekonomide aktif rol almalı", "Hem düzenlemeli hem özel sektöre alan açmalı", "Piyasa mümkün olduğunca serbest olmalı", "Paylaşmak istemiyorum"],
+    political: true,
+  },
+  {
+    category: "Siyasi görüş ve politik tercihler",
+    question: "Vergi politikası konusunda hangisine yakınsın?",
+    options: ["Daha yüksek vergi, daha kapsamlı kamu hizmeti", "Gelire göre dengeli ve adil vergi", "Daha düşük vergi, daha sınırlı devlet harcaması", "Paylaşmak istemiyorum"],
+    political: true,
+  },
+  {
+    category: "Siyasi görüş ve politik tercihler",
+    question: "İfade özgürlüğü hakkında düşüncen nedir?",
+    options: ["Çok geniş biçimde korunmalı", "Özgürlük ile toplumsal güvenlik dengelenmeli", "Bazı konularda daha sıkı sınırlar olmalı", "Paylaşmak istemiyorum"],
+    political: true,
+  },
+  {
+    category: "Siyasi görüş ve politik tercihler",
+    question: "Devlet bireylerin özel yaşam tercihlerine müdahale etmeli mi?",
+    options: ["Hayır, bireysel özgürlük esas olmalı", "Sınırlı ve belirli durumlarda müdahale edebilir", "Toplumsal değerleri korumak için müdahale edebilir", "Paylaşmak istemiyorum"],
+    political: true,
+  },
+  {
+    category: "Siyasi görüş ve politik tercihler",
+    question: "Göç politikası nasıl yürütülmeli?",
+    options: ["Daha açık ve kapsayıcı olmalı", "Kontrollü ve dengeli yürütülmeli", "Daha sınırlayıcı olmalı", "Paylaşmak istemiyorum"],
+    political: true,
+  },
+  {
+    category: "Siyasi görüş ve politik tercihler",
+    question: "Türkiye'nin yönetim sistemi hakkında hangisine yakınsın?",
+    options: ["Güçlü parlamenter sistem", "Güçler ayrılığı güçlü başkanlık sistemi", "Mevcut sistemin iyileştirilmesi", "Farklı bir model", "Paylaşmak istemiyorum"],
+    political: true,
+  },
+  {
+    category: "Siyasi görüş ve politik tercihler",
+    question: "Türkiye dış politikada öncelikle nasıl hareket etmeli?",
+    options: ["Batı kurumları ve ittifaklarıyla yakın iş birliği", "Bağımsız ve çok yönlü dış politika", "Bölgesel iş birliklerine öncelik", "Denge politikası", "Paylaşmak istemiyorum"],
+    political: true,
+  },
+  {
+    category: "Siyasi görüş ve politik tercihler",
+    question: "Gelenekler ve toplumsal değişim konusunda yaklaşımın nedir?",
+    options: ["Gelenekler korunmalı", "Gelenekler ve değişim dengelenmeli", "Toplum değişime daha açık olmalı", "Paylaşmak istemiyorum"],
+    political: true,
+  },
+  {
+    category: "Kültürel kimlik",
+    question: "Etnik veya kültürel aidiyetini nasıl tanımlarsın?",
+    options: ["Türk", "Kürt", "Laz", "Göçmen", "Diğer", "Belirtmek istemiyorum"],
+    optional: true,
+  },
 ];
+
+const POLITICAL_OPT_IN_KEY = "political_match_opt_in";
 
 export default function MatchPage() {
   const router = useRouter();
   const [supabase] = useState(() => createClient());
 
   const [answers, setAnswers] = useState<Answers>({});
+  const [politicalMatchOptIn, setPoliticalMatchOptIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -162,7 +221,18 @@ export default function MatchPage() {
       if (!mounted) return;
 
       if (!error && data?.answers) {
-        setAnswers(data.answers as Answers);
+        const stored = data.answers as Record<string, unknown>;
+        const restored: Answers = {};
+
+        questions.forEach((_, index) => {
+          const value = stored[String(index)];
+          if (typeof value === "string" || Array.isArray(value)) {
+            restored[index] = value as Answer;
+          }
+        });
+
+        setAnswers(restored);
+        setPoliticalMatchOptIn(stored[POLITICAL_OPT_IN_KEY] === true);
         setSaved(data.completed === true);
       } else if (error) {
         setMessage("Cevaplar yüklenemedi: " + error.message);
@@ -183,7 +253,6 @@ export default function MatchPage() {
       ...previous,
       [questionIndex]: answer,
     }));
-
     setSaved(false);
     setMessage("");
   }
@@ -192,23 +261,18 @@ export default function MatchPage() {
     setAnswers((previous) => {
       const current = previous[questionIndex];
       const selected = Array.isArray(current) ? current : [];
-
       let updated: string[];
 
       if (answer === "Hepsi") {
         updated = selected.includes("Hepsi") ? [] : ["Hepsi"];
       } else {
         const withoutAll = selected.filter((item) => item !== "Hepsi");
-
         updated = withoutAll.includes(answer)
           ? withoutAll.filter((item) => item !== answer)
           : [...withoutAll, answer];
       }
 
-      return {
-        ...previous,
-        [questionIndex]: updated,
-      };
+      return { ...previous, [questionIndex]: updated };
     });
 
     setSaved(false);
@@ -217,28 +281,26 @@ export default function MatchPage() {
 
   function isAnswered(index: number) {
     const answer = answers[index];
-
     if (Array.isArray(answer)) return answer.length > 0;
-
     return Boolean(answer);
   }
 
   function isSelected(index: number, option: string) {
     const answer = answers[index];
-
     if (Array.isArray(answer)) return answer.includes(option);
-
     return answer === option;
   }
 
   async function saveAnswers() {
-    const unanswered = questions.findIndex(
-      (_, index) => !isAnswered(index)
-    );
+    const unanswered = questions.findIndex((item, index) => {
+      if (item.optional) return false;
+      if (item.political && !politicalMatchOptIn) return false;
+      return !isAnswered(index);
+    });
 
     if (unanswered !== -1) {
       setMessage(
-        `Lütfen ${unanswered + 1}. soruyu da cevapla. Hassas sorularda "Paylaşmak istemiyorum" seçeneğini kullanabilirsin.`
+        `Lütfen ${unanswered + 1}. soruyu cevapla. Hassas sorularda "Paylaşmak istemiyorum" seçeneğini kullanabilirsin.`
       );
       return;
     }
@@ -255,12 +317,17 @@ export default function MatchPage() {
       return;
     }
 
+    const storedAnswers = {
+      ...answers,
+      [POLITICAL_OPT_IN_KEY]: politicalMatchOptIn,
+    };
+
     const { error } = await supabase
       .from("match_answers")
       .upsert(
         {
           user_id: userData.user.id,
-          answers,
+          answers: storedAnswers,
           completed: true,
           updated_at: new Date().toISOString(),
         },
@@ -280,53 +347,123 @@ export default function MatchPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#090b12] text-white grid place-items-center">
-        <p className="text-gray-400">Match testi hazırlanıyor...</p>
+      <main className="grid min-h-screen place-items-center bg-[#101820] text-[#F0EDE5]">
+        <p className="text-[#A8ADA8]">Match testi hazırlanıyor...</p>
       </main>
     );
   }
 
-  const answeredCount = questions.filter((_, index) =>
-    isAnswered(index)
+  const answeredCount = questions.filter((item, index) => {
+    if (item.optional) return false;
+    if (item.political && !politicalMatchOptIn) return false;
+    return isAnswered(index);
+  }).length;
+
+  const requiredCount = questions.filter(
+    (item) => !item.optional && (!item.political || politicalMatchOptIn)
   ).length;
 
   const categories = [...new Set(questions.map((q) => q.category))];
+  const progress = requiredCount
+    ? (answeredCount / requiredCount) * 100
+    : 0;
 
   return (
-    <main className="min-h-screen bg-[#090b12] text-white px-4 py-8">
+    <main className="min-h-screen bg-[#101820] px-4 py-8 text-[#F0EDE5]">
       <div className="mx-auto max-w-3xl">
         <button
           onClick={() => router.push("/")}
-          className="mb-6 text-sm text-violet-300 hover:text-white"
+          className="mb-6 text-sm font-medium text-[#D3B879] transition hover:text-[#F0EDE5]"
         >
           ← Ana sayfaya dön
         </button>
 
-        <div className="rounded-3xl border border-violet-500/20 bg-gradient-to-br from-[#211443] to-[#10121e] p-7 sm:p-10">
-          <p className="text-xs font-bold tracking-[0.3em] text-violet-300">
-            VEKLIX MATCH
-          </p>
+        <div className="relative overflow-hidden rounded-3xl border border-[#B99A58]/30 bg-gradient-to-br from-[#1D3B30] via-[#142B24] to-[#101820] p-7 sm:p-10">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-[#B99A58]/10 blur-3xl" />
 
-          <h1 className="mt-4 text-3xl font-black sm:text-4xl">
-            Seni biraz tanıyalım.
-          </h1>
-
-          <p className="mt-4 text-sm leading-7 text-gray-300">
-            Cevapların sayesinde sana daha uyumlu insanları keşfedebileceksin.
-            Doğru veya yanlış cevap yok. Kendin olman yeterli.
-          </p>
-
-          <div className="mt-7">
-            <div className="mb-2 flex justify-between text-xs text-gray-400">
-              <span>Test ilerlemesi</span>
-              <span>{answeredCount}/22</span>
+          <div className="relative">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#D3B879]/40 bg-[#142B24] font-black text-[#D3B879]">
+                V
+              </div>
+              <p className="text-xs font-bold tracking-[0.3em] text-[#D3B879]">
+                VEKİLX MATCH
+              </p>
             </div>
 
-            <div className="h-2 overflow-hidden rounded-full bg-white/10">
-              <div
-                className="h-full rounded-full bg-violet-500 transition-all"
-                style={{ width: `${(answeredCount / 22) * 100}%` }}
-              />
+            <h1 className="mt-6 text-3xl font-black sm:text-4xl">
+              Seni biraz tanıyalım.
+            </h1>
+
+            <p className="mt-4 text-sm leading-7 text-[#D8D8D0]">
+              Cevapların sayesinde sana daha uyumlu insanları
+              keşfedebileceksin. Doğru veya yanlış cevap yok.
+              Kendin olman yeterli.
+            </p>
+
+            <div className="mt-7 rounded-2xl border border-[#B99A58]/25 bg-[#101820]/40 p-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="font-bold text-[#F0EDE5]">
+                    Siyasi görüşüme göre eşleşmek istiyorum
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-[#A8ADA8]">
+                    Bu tercih yalnızca siyasi cevaplarının eşleşme hesabında
+                    kullanılıp kullanılmayacağını belirler. Siyasi sorular
+                    her zaman görünür.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={politicalMatchOptIn}
+                  onClick={() => {
+                    setPoliticalMatchOptIn((value) => !value);
+                    setSaved(false);
+                    setMessage("");
+                  }}
+                  className={`relative h-7 w-12 shrink-0 rounded-full transition ${
+                    politicalMatchOptIn ? "bg-[#B99A58]" : "bg-[#52605A]"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-1 h-5 w-5 rounded-full bg-white transition ${
+                      politicalMatchOptIn ? "left-6" : "left-1"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2 text-center text-xs">
+                <div className="rounded-xl border border-[#B99A58]/20 bg-[#142B24] p-3">
+                  <strong className="block text-lg text-[#D3B879]">%60</strong>
+                  <span className="text-[#D8D8D0]">Siyasi uyum</span>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
+                  <strong className="block text-lg text-[#F0EDE5]">%40</strong>
+                  <span className="text-[#A8ADA8]">Diğer uyum alanları</span>
+                </div>
+              </div>
+
+              <p className="mt-3 text-[11px] leading-5 text-[#A8ADA8]">
+                Tercihin sana aittir. Siyasi eşleşmeyi istediğin zaman
+                açabilir veya kapatabilirsin.
+              </p>
+            </div>
+
+            <div className="mt-7">
+              <div className="mb-2 flex justify-between text-xs text-[#A8ADA8]">
+                <span>Test ilerlemesi</span>
+                <span>{answeredCount}/{requiredCount}</span>
+              </div>
+
+              <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-[#B99A58] transition-all"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -334,7 +471,7 @@ export default function MatchPage() {
         <div className="mt-7 space-y-8">
           {categories.map((category) => (
             <section key={category}>
-              <h2 className="mb-4 text-lg font-bold text-violet-300">
+              <h2 className="mb-4 border-b border-[#B99A58]/20 pb-3 text-lg font-bold text-[#D3B879]">
                 {category}
               </h2>
 
@@ -345,26 +482,39 @@ export default function MatchPage() {
                   return (
                     <div
                       key={index}
-                      className="rounded-2xl border border-white/10 bg-[#11141f] p-5"
+                      className="rounded-2xl border border-white/10 bg-[#17231F] p-5 transition hover:border-[#B99A58]/30"
                     >
                       <div className="mb-4 flex items-center justify-between gap-3">
                         <div>
-                          <p className="font-semibold leading-6">
-                            <span className="mr-2 text-violet-400">
+                          <p className="font-semibold leading-6 text-[#F0EDE5]">
+                            <span className="mr-2 text-[#D3B879]">
                               {index + 1}.
                             </span>
                             {item.question}
                           </p>
 
                           {item.multiSelect && (
-                            <p className="mt-2 text-xs text-gray-500">
+                            <p className="mt-2 text-xs text-[#A8ADA8]">
                               Birden fazla seçenek işaretleyebilirsin.
+                            </p>
+                          )}
+
+                          {item.optional && (
+                            <p className="mt-2 text-xs text-[#A8ADA8]">
+                              İsteğe bağlıdır. Boş bırakabilirsin.
+                            </p>
+                          )}
+
+                          {item.political && !politicalMatchOptIn && (
+                            <p className="mt-2 text-xs text-[#A8ADA8]">
+                              İsteğe bağlıdır. Siyasi eşleşme kapalıyken bu
+                              cevaplar uyum hesabında kullanılmaz.
                             </p>
                           )}
                         </div>
 
                         {isAnswered(index) && (
-                          <span className="shrink-0 text-xs text-green-400">
+                          <span className="shrink-0 text-sm font-bold text-[#D3B879]">
                             ✓
                           </span>
                         )}
@@ -385,8 +535,8 @@ export default function MatchPage() {
                               }
                               className={`rounded-xl border px-4 py-3 text-left text-sm transition ${
                                 selected
-                                  ? "border-violet-500 bg-violet-600/20 text-violet-200"
-                                  : "border-white/10 bg-white/[0.02] text-gray-300 hover:border-violet-500/50 hover:bg-white/5"
+                                  ? "border-[#B99A58] bg-[#142B24] text-[#D3B879]"
+                                  : "border-white/10 bg-[#101820]/50 text-[#D8D8D0] hover:border-[#B99A58]/50 hover:bg-[#1C2A25]"
                               }`}
                             >
                               {selected ? "✓ " : ""}
@@ -404,22 +554,23 @@ export default function MatchPage() {
         </div>
 
         {message && (
-          <p className="mt-6 rounded-xl border border-white/10 bg-[#11141f] p-4 text-sm text-violet-300">
+          <p className="mt-6 rounded-xl border border-[#B99A58]/25 bg-[#17231F] p-4 text-sm text-[#D3B879]">
             {message}
           </p>
         )}
 
-        <div className="mt-7 rounded-2xl border border-white/10 bg-[#11141f] p-5">
-          <p className="text-sm leading-6 text-gray-400">
+        <div className="mt-7 rounded-2xl border border-[#B99A58]/20 bg-[#17231F] p-5">
+          <p className="text-sm leading-6 text-[#A8ADA8]">
             Cevapların özel olarak saklanır. Din, siyasi görüş, cinsiyet ve
-            eşleşme tercihlerin gibi hassas bilgiler gizli tutulur.
-            Cevaplarını istediğin zaman güncelleyebilirsin.
+            kültürel kimlik gibi hassas bilgileri paylaşmak zorunda değilsin.
+            Siyasi eşleşme iznini istediğin zaman değiştirebilirsin.
+            Cevaplarını da istediğin zaman güncelleyebilirsin.
           </p>
 
           <button
             onClick={saveAnswers}
             disabled={saving}
-            className="mt-5 w-full rounded-xl bg-violet-600 px-5 py-4 font-bold transition hover:bg-violet-500 disabled:opacity-50"
+            className="mt-5 w-full rounded-xl border border-[#D3B879]/40 bg-[#B99A58] px-5 py-4 font-bold text-[#142B24] transition hover:bg-[#D3B879] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {saving
               ? "Cevapların kaydediliyor..."
@@ -428,6 +579,10 @@ export default function MatchPage() {
                 : "Testi tamamla"}
           </button>
         </div>
+
+        <p className="mt-6 text-center text-xs text-[#A8ADA8]/70">
+          VEKİLX · Siyaset ciddi, biz değiliz.
+        </p>
       </div>
     </main>
   );

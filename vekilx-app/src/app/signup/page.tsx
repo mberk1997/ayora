@@ -76,39 +76,40 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#090b12] px-5 py-10 text-white">
-      <div className="w-full max-w-md">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#101820] px-5 py-10 text-[#F0EDE5]">
+      <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[#1D3B30]/50 blur-[120px]" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-[#B99A58]/10 blur-[120px]" />
 
-        <a href="/" className="mb-10 flex items-center justify-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-600 text-2xl font-black">
+      <div className="relative w-full max-w-md">
+        <a href="/" className="mb-8 flex items-center justify-center gap-3">
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#D3B879]/50 bg-[#142B24] text-2xl font-black text-[#D3B879]">
             V
-          </div>
+          </span>
           <span className="text-3xl font-black tracking-[0.18em]">
-            VEKLIX
+            VEKİLX
           </span>
         </a>
 
         <form
           onSubmit={handleSignup}
-          className="rounded-3xl border border-violet-500/20 bg-[#11141f] p-7 shadow-2xl sm:p-10"
+          className="rounded-3xl border border-[#B99A58]/25 bg-[#17231F]/95 p-7 shadow-2xl shadow-black/30 sm:p-9"
         >
-          <p className="text-xs font-bold tracking-[0.3em] text-violet-300">
+          <p className="text-xs font-bold tracking-[0.3em] text-[#D3B879]">
             SİYASET CİDDİ, BİZ DEĞİLİZ.
           </p>
 
           <h1 className="mt-5 text-3xl font-black">
-            Aramıza katıl.
+            Cumhuriyete katıl.
           </h1>
 
-          <p className="mt-3 text-sm leading-6 text-gray-400">
+          <p className="mt-3 text-sm leading-6 text-[#A8ADA8]">
             Bir hesap oluştur, karakterini seç ve gündeme dahil ol.
             Burada herkesin söyleyecek bir sözü var.
           </p>
 
           <div className="mt-8 space-y-5">
-
             <div>
-              <label className="mb-2 block text-sm font-semibold">
+              <label className="mb-2 block text-sm font-semibold text-[#D8D8D0]">
                 Kullanıcı adın
               </label>
               <input
@@ -118,12 +119,12 @@ export default function SignupPage() {
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
                 placeholder="Örneğin: gizli_vatandas"
-                className="w-full rounded-xl border border-white/10 bg-[#090b12] px-4 py-3 text-sm outline-none transition focus:border-violet-500"
+                className="w-full rounded-xl border border-white/10 bg-[#101820] px-4 py-3 text-sm text-[#F0EDE5] outline-none transition placeholder:text-[#A8ADA8]/50 focus:border-[#B99A58]"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-semibold">
+              <label className="mb-2 block text-sm font-semibold text-[#D8D8D0]">
                 E-posta adresin
               </label>
               <input
@@ -132,12 +133,12 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="ornek@mail.com"
-                className="w-full rounded-xl border border-white/10 bg-[#090b12] px-4 py-3 text-sm outline-none transition focus:border-violet-500"
+                className="w-full rounded-xl border border-white/10 bg-[#101820] px-4 py-3 text-sm text-[#F0EDE5] outline-none transition placeholder:text-[#A8ADA8]/50 focus:border-[#B99A58]"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-semibold">
+              <label className="mb-2 block text-sm font-semibold text-[#D8D8D0]">
                 Şifren
               </label>
               <input
@@ -147,12 +148,12 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="En az 8 karakter"
-                className="w-full rounded-xl border border-white/10 bg-[#090b12] px-4 py-3 text-sm outline-none transition focus:border-violet-500"
+                className="w-full rounded-xl border border-white/10 bg-[#101820] px-4 py-3 text-sm text-[#F0EDE5] outline-none transition placeholder:text-[#A8ADA8]/50 focus:border-[#B99A58]"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-semibold">
+              <label className="mb-2 block text-sm font-semibold text-[#D8D8D0]">
                 Şifreni tekrar gir
               </label>
               <input
@@ -161,14 +162,13 @@ export default function SignupPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Şifreni tekrar yaz"
-                className="w-full rounded-xl border border-white/10 bg-[#090b12] px-4 py-3 text-sm outline-none transition focus:border-violet-500"
+                className="w-full rounded-xl border border-white/10 bg-[#101820] px-4 py-3 text-sm text-[#F0EDE5] outline-none transition placeholder:text-[#A8ADA8]/50 focus:border-[#B99A58]"
               />
             </div>
-
           </div>
 
           {message && (
-            <p className="mt-5 rounded-xl border border-violet-500/20 bg-violet-500/10 p-3 text-sm leading-6 text-violet-300">
+            <p className="mt-5 rounded-xl border border-[#B99A58]/25 bg-[#142B24] p-3 text-sm leading-6 text-[#D3B879]">
               {message}
             </p>
           )}
@@ -176,26 +176,25 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-7 w-full rounded-xl bg-violet-600 py-4 text-sm font-bold transition hover:bg-violet-500 disabled:opacity-50"
+            className="mt-7 w-full rounded-xl border border-[#D3B879]/40 bg-[#B99A58] py-4 text-sm font-bold text-[#142B24] transition hover:bg-[#D3B879] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? "Hesabın oluşturuluyor..." : "VEKLIX'e Katıl"}
+            {loading ? "Hesabın oluşturuluyor..." : "VEKİLX'e Katıl"}
           </button>
 
-          <div className="mt-7 border-t border-white/10 pt-6 text-center text-sm text-gray-400">
+          <div className="mt-7 border-t border-white/10 pt-6 text-center text-sm text-[#A8ADA8]">
             Zaten hesabın var mı?{" "}
             <a
               href="/login"
-              className="font-bold text-violet-400 hover:text-violet-300"
+              className="font-bold text-[#D3B879] transition hover:text-[#F0EDE5]"
             >
               Giriş yap
             </a>
           </div>
         </form>
 
-        <p className="mt-7 text-center text-xs text-gray-600">
-          VEKLIX © 2026 · Siyaset ciddi, biz değiliz.
+        <p className="mt-7 text-center text-xs text-[#A8ADA8]/70">
+          VEKİLX © 2026 · Siyaset ciddi, biz değiliz.
         </p>
-
       </div>
     </main>
   );
