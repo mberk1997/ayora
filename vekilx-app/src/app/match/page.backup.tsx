@@ -53,7 +53,7 @@ const questions: Question[] = [
   },
   {
     category: "İlişki ve iletişim",
-    question: "AYORA'da öncelikli olarak ne arıyorsun?",
+    question: "VEKLIX'da öncelikli olarak ne arıyorsun?",
     options: ["Ciddi ilişki", "Arkadaşlık", "Yeni insanlarla tanışmak", "Henüz karar vermedim"],
   },
   {
@@ -304,7 +304,7 @@ export default function MatchPage() {
 
         <div className="rounded-3xl border border-violet-500/20 bg-gradient-to-br from-[#211443] to-[#10121e] p-7 sm:p-10">
           <p className="text-xs font-bold tracking-[0.3em] text-violet-300">
-            AYORA MATCH
+            VEKLIX MATCH
           </p>
 
           <h1 className="mt-4 text-3xl font-black sm:text-4xl">
