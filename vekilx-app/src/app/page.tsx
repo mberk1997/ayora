@@ -192,7 +192,7 @@ export default function Home() {
     let likedPostIds = new Set<number>();
     let commentCounts: Record<number, number> = {};
     let loadedComments: Comment[] = [];
-    let loadedReplies: Omit<Reply, "nickname">[] = [];
+    let loadedReplies: Reply[] = [];
 
     const { data: currentUserData } = await supabase.auth.getUser();
     const currentUserId = currentUserData.user?.id ?? null;
@@ -242,7 +242,10 @@ export default function Home() {
         .order("created_at", { ascending: true });
 
       if (!commentsError && comments) {
-        loadedComments = comments;
+        loadedComments = comments.map((comment) => ({
+          ...comment,
+          nickname: "",
+        }));
 
         comments.forEach((comment) => {
           commentCounts[comment.post_id] =
@@ -264,7 +267,10 @@ export default function Home() {
           .order("created_at", { ascending: true });
 
         if (!repliesError && replies) {
-          loadedReplies = replies;
+          loadedReplies = replies.map((reply) => ({
+            ...reply,
+            nickname: "",
+          }));
           replies.forEach((reply) => userIds.add(reply.user_id));
         } else if (repliesError) {
           setMessage("Yorum yanıtları yüklenemedi: " + repliesError.message);
